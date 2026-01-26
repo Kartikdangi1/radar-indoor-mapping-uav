@@ -1,0 +1,156 @@
+###############################################################################
+# Radar Occupancy Grid Configuration v2
+# With TF transforms and improved persistence
+###############################################################################
+
+temporal_radar_occupancy_grid:
+  ros__parameters:
+    
+    # ==========================================================================
+    # FRAME CONFIGURATION (NEW - Critical for map accumulation)
+    # ==========================================================================
+    # The grid accumulates in map_frame. Points are transformed from radar_frame.
+    # Robot pose is tracked via base_frame for ray casting.
+    
+    map_frame: "odom"              # Fixed frame for the occupancy grid
+                                   # Use "odom" for local consistency
+                                   # Use "map" if you have SLAM loop closures
+    
+    base_frame: "base_link"        # Robot base frame (for ray casting origin)
+    
+    radar_frame: "ARS_548"         # Radar sensor frame (or leave empty to use
+                                   # frame_id from PointCloud2 message)
+    
+    # ==========================================================================
+    # TOPICS
+    # ==========================================================================
+    input_topic: "/PointCloudDetection"
+    grid_topic: "/map"             # Output occupancy grid topic
+    
+    # ==========================================================================
+    # GRID PARAMETERS
+    # ==========================================================================
+    grid_resolution: 0.25          # 25cm cells (balance detail vs noise)
+    grid_size_m: 50.0              # 50m x 50m map, centered at (0,0) in map_frame
+    
+    # ==========================================================================
+    # TEMPORAL PARAMETERS - TUNED FOR PERSISTENCE
+    # ==========================================================================
+    temporal_decay_rate: 0.01      # Very slow temporal decay
+    frames_before_decay: 100       # Don't decay until 100 frames without update
+    decay_factor: 0.995            # When decaying, do it very slowly
+    decay_update_rate_hz: 1.0      # Run decay check once per second
+    
+    # ==========================================================================
+    # STATIC OBJECT PROTECTION (NEW - Prevents premature clearing)
+    # ==========================================================================
+    min_observations_for_static: 3         # After 3 occupied observations, mark as static
+    occupied_protection_threshold: 0.5     # Don't free-space cells with log_odds > 0.5
+    occupied_protection_frames: 50         # Don't clear cells seen as occupied in last 50 frames
+    static_decay_factor: 0.999             # Almost no decay for confirmed static obstacles
+    
+    # ==========================================================================
+    # CONFIDENCE PARAMETERS
+    # ==========================================================================
+    confidence_publish_threshold: 0.50 # Require more confidence
+    min_observations_for_static: 5     # Need more observations
+
+    
+    # ==========================================================================
+    # BAYESIAN LOG-ODDS
+    # ==========================================================================
+    p_occ: 0.70                    # Occupied probability for hit
+    p_free: 0.4                    # Free probability for miss (relatively weak)
+    p0: 0.5                        # Prior
+    lo_min: -2.0                   # Min log-odds (allows some free marking)
+    lo_max: 3.0                    # Max log-odds (asymmetric - harder to clear)
+    
+    # ==========================================================================
+    # FREE SPACE MARKING - CONSERVATIVE
+    # ==========================================================================
+    mark_free_space: true          # Enable ray casting for free space
+    free_space_weight: 0.3         # Weak free-space evidence (was 0.5)
+    safety_margin_m: 0.5           # Stop marking free 0.5m before hit point
+    
+    # ==========================================================================
+    # RANGE FILTERING
+    # ==========================================================================
+    min_range: 1.0                 # Ignore detections closer than 1m
+    max_range: 40.0                # Ignore detections beyond 40m
+    
+    # ==========================================================================
+    # RCS/INTENSITY FOR ARS_548
+    # ==========================================================================
+    rcs_format: "uint8"            # ARS_548 uses UINT8 (0-255)
+    rcs_min_db: -12.0              # Maps to 0
+    rcs_max_db: 12.0               # Maps to 255
+    intensity_scale: 0.08          # How much RCS affects occupancy probability
+    
+    # ==========================================================================
+    # DYNAMIC OBJECT FILTERING
+    # ==========================================================================
+    enable_dynamic_filter: true
+    dynamic_velocity_threshold: 2.0        # Objects moving > 2 m/s are dynamic
+    dynamic_decay_factor: 0.95             # Dynamic objects decay faster
+    
+    # ==========================================================================
+    # TF CONFIGURATION
+    # ==========================================================================
+    tf_timeout_sec: 0.1            # Max time to wait for TF
+
+
+###############################################################################
+# HOW TO VERIFY IN RVIZ
+###############################################################################
+#
+# 1. Set Fixed Frame to "odom" (or whatever you set map_frame to)
+#
+# 2. Add displays:
+#    - Map: topic /map
+#    - PointCloud2: topic /PointCloudDetection (to see raw radar)
+#    - TF: to see the transform tree
+#    - Path: topic /trajectory (if using graph_slam)
+#
+# 3. Expected TF tree:
+#    map -> odom -> base_link -> imu_link -> ARS_548
+#                           \-> radar_frame
+#                           \-> camera_link -> ...
+#
+# 4. The grid should stay fixed while the robot (base_link) moves through it.
+#    Objects should accumulate and persist even when robot moves away.
+#
+###############################################################################
+
+
+###############################################################################
+# TROUBLESHOOTING
+###############################################################################
+#
+# Problem: "Cannot get TF" warnings
+# Solution: Check your TF tree with: ros2 run tf2_tools view_frames
+#           Make sure map_frame -> radar_frame path exists
+#
+# Problem: Map moves with robot (not accumulating)
+# Solution: Make sure map_frame is "odom" or "map", NOT "base_link"
+#           The grid_msg.header.frame_id must be the fixed frame
+#
+# Problem: Objects disappear too quickly
+# Solutions:
+#   - Increase frames_before_decay to 200
+#   - Increase decay_factor to 0.998
+#   - Increase occupied_protection_frames to 100
+#   - Lower confidence_publish_threshold to 0.1
+#
+# Problem: Too much noise / false positives
+# Solutions:
+#   - Increase min_observations_for_static to 5
+#   - Increase confidence_publish_threshold to 0.25
+#   - Decrease p_occ to 0.70
+#
+# Problem: Free space not being marked
+# Solutions:
+#   - Ensure mark_free_space: true
+#   - Check have_robot_pose is being set (needs base_frame -> map_frame TF)
+#   - Decrease occupied_protection_threshold to 0.3
+#
+###############################################################################

@@ -1,0 +1,94 @@
+###############################################################################
+# Graph SLAM Configuration v3
+# Optimized for Sparse Radar with Multiple Registration Methods
+#
+# KEY IMPROVEMENTS:
+# 1. NDT + GICP registration (better for sparse point clouds)
+# 2. Point accumulation across frames
+# 3. More permissive fitness thresholds
+# 4. Statistical outlier removal
+###############################################################################
+
+graph_slam:
+  ros__parameters:
+
+    # =========================================================================
+    # IMU BIAS CALIBRATION
+    # =========================================================================
+    # Calibrate by placing robot on level surface and recording IMU data
+    bias_rpy: [0.0, 0.0, 0.0]
+    
+    # =========================================================================
+    # KEYFRAME THRESHOLDS
+    # =========================================================================
+    # For sparse radar, create keyframes more frequently but accumulate points
+    
+    keyframe_delta_trans: 0.5     # meters between keyframes
+    keyframe_delta_angle: 0.26    # radians (~15°) between keyframes
+    
+    # =========================================================================
+    # OPTIMIZATION WINDOW
+    # =========================================================================
+    max_window_size: 12           # Number of keyframes to optimize together
+    
+    # =========================================================================
+    # REGISTRATION PARAMETERS
+    # =========================================================================
+    # Critical for sparse radar - these are more permissive than lidar defaults
+    
+    min_points_for_keyframe: 15   # Min points to create keyframe
+    min_points_for_icp: 10        # Min points for registration attempt
+    max_icp_fitness: 8.0          # Max acceptable fitness score
+                                  # Radar is noisy, so we accept higher fitness
+    icp_max_correspondence_dist: 2.5  # Max point matching distance (meters)
+                                      # Larger because radar has more uncertainty
+    
+    # =========================================================================
+    # MULTI-METHOD REGISTRATION (NEW in v3)
+    # =========================================================================
+    # Use multiple registration methods and pick best result
+    
+    use_ndt: true                 # Normal Distributions Transform
+                                  # Better for sparse, distributed point clouds
+    
+    use_gicp: true                # Generalized ICP
+                                  # Good fallback when NDT fails
+    
+    ndt_resolution: 1.0           # NDT voxel/cell size in meters
+                                  # Larger = more robust to noise
+                                  # Smaller = more precise but needs more points
+    
+    # =========================================================================
+    # POINT CLOUD PREPROCESSING (NEW in v3)
+    # =========================================================================
+    
+    voxel_size: 0.3               # Downsampling voxel size (meters)
+                                  # Reduces noise and computation
+    
+    use_outlier_removal: true     # Remove statistical outliers before registration
+    
+    accumulation_frames: 5        # Accumulate points from N consecutive frames
+                                  # Creates denser keyframe clouds for better registration
+
+
+###############################################################################
+# TUNING GUIDE
+###############################################################################
+#
+# If ICP still failing frequently:
+#   - Increase max_icp_fitness to 12.0 or 15.0
+#   - Increase icp_max_correspondence_dist to 3.0 or 4.0
+#   - Increase accumulation_frames to 8 or 10
+#   - Decrease min_points_for_keyframe to 10
+#
+# If odometry is drifting too much:
+#   - Decrease max_icp_fitness to 5.0 (stricter)
+#   - Decrease keyframe_delta_trans to 0.3
+#   - Increase max_window_size to 15
+#
+# If too much computation:
+#   - Increase voxel_size to 0.5
+#   - Set use_ndt: false (GICP only)
+#   - Decrease max_window_size to 8
+#
+###############################################################################

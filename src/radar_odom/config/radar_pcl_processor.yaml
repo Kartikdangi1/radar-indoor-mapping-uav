@@ -1,0 +1,77 @@
+###############################################################################
+# FIXED Radar Point Cloud Processor Configuration
+# For ARS_548 radar with UINT8 RCS
+###############################################################################
+
+radar_pcl_processor:
+  ros__parameters:
+  
+    # =========================================================================
+    # TOPIC NAMES
+    # =========================================================================
+    imu_topic: "/robot/sensor/imu/data"
+    radar_topic: "/PointCloudDetection"
+    holonomic_vehicle: true                  # true for omni-directional robots
+    
+    # =========================================================================
+    # CHANNEL INDICES (for reference - actual parsing uses field names)
+    # =========================================================================
+    # ARS_548 format: x(0), y(4), z(8), v(12), r(16), RCS(20-UINT8), azimuth(21), elevation(25)
+    intensity_channel: 5                     # RCS field
+    doppler_channel: 4                       # v (velocity/doppler) field
+    
+    # =========================================================================
+    # DYNAMIC OBJECT REMOVAL
+    # =========================================================================
+    enable_dynamic_object_removal: true      # Filter moving objects via Doppler
+
+    # =========================================================================
+    # DISTANCE FILTERING
+    # =========================================================================
+    distance_near_thresh: 0.8                # Min distance (m) - FIX: was 0.5
+    distance_far_thresh: 60.0                # Max distance (m) - FIX: was 80
+    z_low_thresh: -3.0                       # Min height (m) - FIX: was -5
+    z_high_thresh: 5.0                       # Max height (m) - FIX: was 10
+
+    # =========================================================================
+    # EGO VELOCITY ESTIMATOR
+    # =========================================================================
+    min_dist: 0.8                            # Min range for velocity estimation
+    max_dist: 200.0                          # Max range for velocity estimation
+    min_db: -25.0                            # Min RCS/intensity (dB)
+    elevation_thresh_deg: 45.0               # Max elevation angle
+    azimuth_thresh_deg: 55.0                 # Max azimuth angle
+    doppler_velocity_correction_factor: 1.0
+    
+    # =========================================================================
+    # ZERO VELOCITY DETECTION
+    # =========================================================================
+    thresh_zero_velocity: 0.25               # Velocity threshold (m/s) - FIX: was 0.3
+    
+    # =========================================================================
+    # RANSAC OUTLIER REJECTION
+    # =========================================================================
+    allowed_outlier_percentage: 0.35         # Max outliers - FIX: was 0.30
+    outlier_prob: 0.4                        # Outlier probability - FIX: was 0.5
+    success_prob: 0.80                       # Success probability - FIX: was 0.75
+    N_ransac_points: 5.0                     # RANSAC sample size
+    inlier_thresh: 0.4                       # Inlier threshold (m/s) - FIX: was 0.5
+    
+    # =========================================================================
+    # VELOCITY ESTIMATION COVARIANCES
+    # =========================================================================
+    sigma_zero_velocity_x: 1.0e-03
+    sigma_zero_velocity_y: 3.2e-03
+    sigma_zero_velocity_z: 1.0e-02
+    sigma_offset_radar_x: 0.0
+    sigma_offset_radar_y: 0.0
+    sigma_offset_radar_z: 0.0
+    max_sigma_x: 0.25                        # FIX: was 0.2
+    max_sigma_y: 0.25                        # FIX: was 0.2
+    max_sigma_z: 0.25                        # FIX: was 0.2
+    max_r_cond: 0.25                         # FIX: was 0.2
+    
+    # =========================================================================
+    # MADGWICK FILTER (for IMU without orientation)
+    # =========================================================================
+    madgwick_beta: 0.1                       # Filter responsiveness (0.01-0.5)
