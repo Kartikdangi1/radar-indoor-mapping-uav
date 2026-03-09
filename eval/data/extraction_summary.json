@@ -1,0 +1,8 @@
+{
+  "odom": 0,
+  "imu": 123514,
+  "radar_raw": 4941,
+  "radar_odom": 0,
+  "radar_map": 0,
+  "loop_closures": 0
+}

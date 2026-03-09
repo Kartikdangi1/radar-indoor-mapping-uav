@@ -1,0 +1,38 @@
+{
+  "total_distance_m": 331.23272803179805,
+  "start_to_end_drift_m": 12.262205262678824,
+  "drift_percent": 3.7019908435804276,
+  "duration_s": 1772903632.6977487,
+  "n_loop_closures": 0,
+  "mean_speed_m_s": 0.7396431407518814,
+  "max_speed_m_s": 1.4625029584634617,
+  "radar_stats": {
+    "raw": {
+      "mean_points": 220.6466615698267,
+      "median_points": 207.0,
+      "max_points": 443.0,
+      "min_points": 60.0
+    },
+    "odom_filter": {
+      "mean_points": 12.586229253112034,
+      "median_points": 13.0,
+      "max_points": 33.0,
+      "min_points": 1.0
+    },
+    "map_filter": {
+      "mean_points": 17.94208192016697,
+      "median_points": 18.0,
+      "max_points": 39.0,
+      "min_points": 3.0
+    }
+  },
+  "dual_lap": {
+    "lap1_distance_m": 166.47044826459,
+    "lap2_distance_m": 164.7622797672081,
+    "total_distance_m": 331.2327280317981,
+    "split_unix_t": 1772903432.755,
+    "split_idx": 3714,
+    "start_to_end_drift_m": 12.262205262678824,
+    "drift_percent": 3.701990843580427
+  }
+}

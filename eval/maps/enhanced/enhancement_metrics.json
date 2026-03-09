@@ -1,0 +1,35 @@
+{
+  "variants": {
+    "raw": {
+      "occupied_fraction": 0.0105,
+      "free_fraction": 0.9474,
+      "unknown_fraction": 0.0421,
+      "mean_entropy_bits": 0.6554,
+      "n_wall_segments": 156,
+      "n_isolated_points": 326,
+      "wall_length_m": 95.48,
+      "explored_m2": 621.92
+    },
+    "auto_median": {
+      "occupied_fraction": 0.0421,
+      "free_fraction": 0.9579,
+      "unknown_fraction": 0.0,
+      "mean_entropy_bits": 0.0,
+      "n_wall_segments": 79,
+      "n_isolated_points": 3,
+      "wall_length_m": 172.69,
+      "explored_m2": 649.23
+    }
+  },
+  "auto_enhance_params": {
+    "threshold": 0.5,
+    "use_adaptive": true,
+    "blur": 3,
+    "median": 3,
+    "opening": 1,
+    "closing": 1,
+    "dilation": 0,
+    "erosion": 0
+  },
+  "resolution_m": 0.07
+}

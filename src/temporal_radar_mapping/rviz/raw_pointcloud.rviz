@@ -1,0 +1,45 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+    Help Height: 78
+
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Class: rviz_default_plugins/PointCloud2
+      Enabled: true
+      Name: Raw Point Cloud (ARS548)
+      Topic: /PointCloudDetection
+      Unreliable: false
+      Use Rainbow: true
+      Max Color Value: 255.0
+      Min Color Value: 0.0
+      Color Transformer: Intensity
+      Size (Pixels): 5
+      Size (m): 0.08
+      Style: Flat Squares
+      Alpha: 1.0
+      Selectable: true
+      Topic Filter: true
+      XYZ Filter Status: true
+      Invert Rainbow: false
+      Decay Time: 0.0
+      Queue Size: 100
+      Buffer Length: 100
+
+  Global Options:
+    Background Color: 80; 80; 80
+    Fixed Frame: base_link
+    Frame Rate: 30
+
+  Views:
+    Current:
+      Class: rviz_default_plugins/TopDownOrtho
+      Name: Top-Down
+      Near Clip Distance: 0.01
+      Scale: 15
+      Target Frame: base_link
+
+Window Geometry:
+  Height: 1200
+  Width: 1600

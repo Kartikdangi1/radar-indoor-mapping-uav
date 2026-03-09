@@ -1,0 +1,112 @@
+temporal_radar_occupancy_grid:
+  ros__parameters:
+    # Frames
+    map_frame: "odom"
+    base_frame: "base_link"
+    radar_frame: "ARS_548"
+
+    # Topics
+    input_topic: "/PointCloudDetectionMapping"
+    grid_topic: "/map"
+    filtered_cloud_topic: "/filtered_radar_cloud"
+    odom_topic: "/fused_odom/odometry"
+
+    # Grid — large for corridor (robot drifts along length, needs big map)
+    grid_resolution: 0.21
+    grid_size_m: 50.0
+
+    # Adaptive grid growth
+    enable_moving_origin: true
+    recenter_margin_m: 5.0
+    expand_step_m: 10.0
+
+    # Inter-scan ego-motion compensation
+    enable_motion_compensation: true
+    odom_buffer_size: 200
+
+    # Indoor multipath rejection
+    enable_multipath_rejection: true
+    multipath_range_ratio: 1.3
+    multipath_min_near_hits: 2
+
+    # Time-based decay
+    decay_delay_sec: 4.0
+    decay_factor: 0.998
+    decay_update_rate_hz: 2.0
+
+    # Static confirmation
+    min_observations_for_static: 15
+    dynamic_revoke_threshold: 10
+    occupied_protection_threshold: 0.20
+    occupied_protection_sec: 1.5
+
+    # Confidence
+    confidence_publish_threshold: 0.50
+    confidence_increment: 0.12
+
+    # Gaussian Inverse Sensor Model
+    enable_gaussian_sensor_model: true
+    gaussian_sigma_m: 0.12
+    gaussian_kernel_half: 3
+    gaussian_min_hits: 3
+    gaussian_radial_half: 0
+    gaussian_tangential_half: 3
+
+    # Bayesian
+    p_occ: 0.80
+    p_free: 0.35
+    p0: 0.5
+    lo_min: -2.5
+    lo_max: 2.5
+
+    # Free space
+    mark_free_space: true
+    free_space_weight: 0.40
+    safety_margin_m: 0.07
+
+    # Range — corridor: longer max range
+    min_range: 0.5
+    max_range: 30.0
+    min_rcs_threshold_db: -13.0
+
+    # RCS
+    rcs_format: "uint8"
+    rcs_min_db: -20.0
+    rcs_max_db: 20.0
+    intensity_scale: 0.40
+    range_decay_factor: 0.020
+
+    # Dynamic filter
+    enable_dynamic_filter: true
+    dynamic_velocity_threshold: 0.6
+    enable_ego_compensation: true
+
+    # TF
+    tf_timeout_sec: 1.0
+    tf_stale_threshold_sec: 0.5
+
+    # Map cleanliness
+    min_occupied_neighbors: 2
+    enable_map_reset_on_loop: false
+    map_reset_time_jump_sec: 0.5
+
+    # Occlusion filtering
+    enable_per_ray_occlusion: true
+    enable_map_occlusion: true
+    map_occlusion_start_frame: 100
+    azimuth_bin_size_deg: 2.0
+    behind_range_margin_m: 0.2
+    behind_detection_weight: 0.10
+    min_hits_to_occlude: 1
+
+    # Angle-dependent RCS thresholds (uint8, 0-255)
+    min_rcs_u8_center: 35
+    min_rcs_u8_edge: 65
+    min_rcs_u8_high_edge: 95
+    min_rcs_u8_elevation: 75
+
+    # FoV limits
+    max_azimuth_deg: 70.0
+    max_elevation_deg: 30.0
+    z_slice_min: -0.6
+    z_slice_max: 1.0

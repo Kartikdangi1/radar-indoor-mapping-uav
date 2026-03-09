@@ -1,0 +1,15 @@
+\begin{table}[htbp]
+    \centering
+    \caption{Processing time per node (mean $\pm$ std) and output frequency.}
+    \label{tab:perf}
+    \begin{tabular}{lrrl}
+        \toprule
+        Node & Mean (ms) & Std (ms) & Rate (Hz) \\
+        \midrule
+        \texttt{radar\_preprocessing\_node} (odom) & 0.94 & 1.10 & 49.7 \\
+        \texttt{radar\_preprocessing\_mapping\_node} & 1.10 & 1.09 & 49.7 \\
+        \texttt{fused\_odom\_node} & 8.35 & 16.81 & 50.0 \\
+        \texttt{temporal\_radar\_occupancy\_grid} & 3.48 & 2.70 & 49.7 \\
+        \bottomrule
+    \end{tabular}
+\end{table}

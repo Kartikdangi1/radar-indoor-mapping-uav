@@ -1,0 +1,42 @@
+##
+# Radar preprocessing config for MAPPING (separate from odometry filtering).
+# This produces /PointCloudDetectionMapping with indoor-optimized parameters:
+#   - Wider FoV (70° azimuth vs 40° for odom) to capture more wall returns
+#   - Stricter RCS threshold (-10 dB vs -20 dB) to reject weak indoor clutter
+#   - Tighter Z-slice for indoor ceiling/floor rejection
+#   - Longer max range for mapping corridors
+##
+/**:
+  ros__parameters:
+    # ── Topics ────────────────────────────────────────────────────────────────
+    input_topic:  "/PointCloudDetection"
+    output_topic: "/PointCloudDetectionMapping"
+
+    # ── Range ─────────────────────────────────────────────────────────────────
+    min_range:  0.5
+    max_range: 30.0         # shorter than odom (20m) — indoor rooms are smaller
+
+    # ── Field of View ─────────────────────────────────────────────────────────
+    max_azimuth_deg:    70.0   # wider than odom (40°) — capture more walls
+    max_elevation_deg:  20.0   # tighter than odom (20°) — reject ceiling bounces
+
+    # ── RCS ───────────────────────────────────────────────────────────────────
+    min_rcs_threshold: -4.0    # VERY strict: only strong reflections (was -7.0)
+
+    # ── Axis Flips ────────────────────────────────────────────────────────────
+    flip_x: false
+    flip_y: true      # Flip Y-axis for radar mount orientation
+    flip_z: false
+
+    # ── Z-Slice ───────────────────────────────────────────────────────────────
+    enable_z_slice: true
+    z_min: -0.3               # tighter to actual floor — remove multipath ghosts
+    z_max:  2.5               # capture walls up to ~2.5m
+
+    # ── Optional TF Transform ─────────────────────────────────────────────────
+    enable_tf_transform:   false
+    target_frame:          "base_link"
+    tf_lookup_timeout_sec:  0.05
+
+    # ── Debug ─────────────────────────────────────────────────────────────────
+    log_filter_stats: true

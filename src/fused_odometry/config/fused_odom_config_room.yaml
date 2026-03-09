@@ -1,0 +1,92 @@
+/**:
+  ros__parameters:
+    # ── Basic Node Settings ──────────────────────────────────────────────
+    publish_hz: 50.0
+    odom_frame: "odom"
+    base_frame: "base_link"
+    publish_tf: true
+
+    # ── Fusion Settings ──────────────────────────────────────────────────
+    use_2d_mode: true
+    is_holonomic: true
+    initialization_imu_frames: 50
+
+    bag_loop_reset: true
+    bag_loop_reset_threshold_sec: 0.5
+
+    # ═════════════════════════════════════════════════════════════════════
+    # IMU SENSOR CONFIGURATION
+    # ═════════════════════════════════════════════════════════════════════
+    imu:
+      enabled: true
+      topic: "/robot/sensor/imu/data"
+      madgwick_beta: 0.005
+      gyro_calib_samples: 2400
+
+      extrinsic:
+        roll: 0.0
+        pitch: 0.0
+        yaw: 0.0
+        flip_x: false
+        flip_y: false
+        flip_z: true
+
+    # ═════════════════════════════════════════════════════════════════════
+    # LIDAR SENSOR CONFIGURATION
+    # ═════════════════════════════════════════════════════════════════════
+    lidar:
+      enabled: true
+      topic: "/robot/sensor/lidar/downwards/data"
+      ema_alpha: 0.15
+      flip_z: true
+      min_range: 0.05
+      max_range: 5.0
+
+    # ═════════════════════════════════════════════════════════════════════
+    # RADAR SENSOR CONFIGURATION
+    # ═════════════════════════════════════════════════════════════════════
+    radar:
+      enabled: true
+      topic: "/PointCloudDetectionFiltered"
+      status_topic: "/Status"
+      staleness_sec: 0.5
+
+      points_in_world_frame: true
+
+      extrinsic:
+        roll: 0.0
+        pitch: 0.0
+        yaw: 0.0
+        flip_x: false
+        flip_y: false
+        flip_z: false
+
+      ransac:
+        min_dist: 0.5
+        max_dist: 15.0          # room: 8×16m — no point tracking beyond room bounds
+        min_db: -30.0
+        azimuth_thresh_deg: 70.0
+        elevation_thresh_deg: 45.0
+        inlier_thresh: 0.30
+        doppler_velocity_correction_factor: 1.0
+        N_ransac_points: 3
+        ransac_success_prob: 0.90
+        ransac_outlier_prob: 0.40
+        ema_alpha_high: 0.7
+        ema_alpha_low: 0.25
+        ema_inlier_thresh: 12
+        dynamic_removal_thresh: 0.6
+        max_speed: 2.0
+
+    # ═════════════════════════════════════════════════════════════════════
+    # SENSOR FUSION — 9-STATE IMU-DRIVEN EKF
+    # ═════════════════════════════════════════════════════════════════════
+    imu_process_noise:
+      acc_noise: 0.05
+      gyro_noise: 0.005
+      acc_bias_noise: 0.001
+      gyro_bias_noise: 0.0001
+
+    measurement_noise:
+      vel_scale: 1.0
+      lidar_height: 0.01

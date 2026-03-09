@@ -4,10 +4,11 @@
   <name>temporal_radar_mapping</name>
   <version>1.0.0</version>
   <description>
-    Temporal confidence-weighted radar occupancy grid mapping.
+    Temporal confidence-weighted radar occupancy grid mapping for indoor UAV navigation
+    using Continental ARS_548 4D radar.
   </description>
-  
-  <maintainer email="your.email@example.com">Your Name</maintainer>
+
+  <maintainer email="kartik.dangi@example.com">Kartik Dangi</maintainer>
   <license>MIT</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
@@ -17,9 +18,11 @@
   <depend>nav_msgs</depend>
   <depend>geometry_msgs</depend>
   <depend>std_msgs</depend>
+  <depend>tf2</depend>
   <depend>tf2_ros</depend>
   <depend>tf2_geometry_msgs</depend>
   <depend>visualization_msgs</depend>
+  <depend>std_srvs</depend>
   <depend>pcl_conversions</depend>
   <depend>pcl_ros</depend>
   <depend>eigen</depend>

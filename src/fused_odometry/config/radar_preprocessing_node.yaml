@@ -1,0 +1,34 @@
+/**:
+  ros__parameters:
+    # ── Topics ────────────────────────────────────────────────────────────────
+    input_topic:  "/PointCloudDetection"
+    output_topic: "/PointCloudDetectionFiltered"
+
+    # ── Range ─────────────────────────────────────────────────────────────────
+    min_range:  0.5
+    max_range: 20.0
+
+    # ── Field of View ─────────────────────────────────────────────────────────
+    max_azimuth_deg:    40.0
+    max_elevation_deg:  20.0
+
+    # ── RCS ───────────────────────────────────────────────────────────────────
+    min_rcs_threshold: -20.0
+
+    # ── Axis Flips ────────────────────────────────────────────────────────────
+    flip_x: false
+    flip_y: true      # Flip Y-axis for radar mount orientation
+    flip_z: false
+
+    # ── Z-Slice ───────────────────────────────────────────────────────────────
+    enable_z_slice: true
+    z_min: -0.5
+    z_max:  1.0
+
+    # ── Optional TF Transform ─────────────────────────────────────────────────
+    enable_tf_transform:   false
+    target_frame:          "base_link"
+    tf_lookup_timeout_sec:  0.05
+
+    # ── Debug ─────────────────────────────────────────────────────────────────
+    log_filter_stats: true

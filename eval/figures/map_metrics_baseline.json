@@ -1,0 +1,19 @@
+{
+  "total_cells": 132496,
+  "free_fraction": 0.0719,
+  "occupied_fraction": 0.0105,
+  "unknown_fraction": 0.8755,
+  "known_fraction": 0.0824,
+  "mean_entropy_bits": 0.3396,
+  "n_wall_segments": 156,
+  "n_isolated_points": 326,
+  "frontier_m": 265.54,
+  "explored_m2": 132.1,
+  "wall_length_m": 150.04,
+  "resolution_m": 0.11,
+  "room_w_m": 8.05,
+  "room_h_m": 16.05,
+  "room_area_m2": 129.2,
+  "room_perimeter_m": 48.2,
+  "room_coverage_pct": 102.2
+}

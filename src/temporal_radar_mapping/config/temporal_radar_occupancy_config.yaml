@@ -1,156 +1,118 @@
-###############################################################################
-# Radar Occupancy Grid Configuration v2
-# With TF transforms and improved persistence
-###############################################################################
-
 temporal_radar_occupancy_grid:
   ros__parameters:
-    
-    # ==========================================================================
-    # FRAME CONFIGURATION (NEW - Critical for map accumulation)
-    # ==========================================================================
-    # The grid accumulates in map_frame. Points are transformed from radar_frame.
-    # Robot pose is tracked via base_frame for ray casting.
-    
-    map_frame: "odom"              # Fixed frame for the occupancy grid
-                                   # Use "odom" for local consistency
-                                   # Use "map" if you have SLAM loop closures
-    
-    base_frame: "base_link"        # Robot base frame (for ray casting origin)
-    
-    radar_frame: "ARS_548"         # Radar sensor frame (or leave empty to use
-                                   # frame_id from PointCloud2 message)
-    
-    # ==========================================================================
-    # TOPICS
-    # ==========================================================================
-    input_topic: "/PointCloudDetection"
-    grid_topic: "/map"             # Output occupancy grid topic
-    
-    # ==========================================================================
-    # GRID PARAMETERS
-    # ==========================================================================
-    grid_resolution: 0.25          # 25cm cells (balance detail vs noise)
-    grid_size_m: 50.0              # 50m x 50m map, centered at (0,0) in map_frame
-    
-    # ==========================================================================
-    # TEMPORAL PARAMETERS - TUNED FOR PERSISTENCE
-    # ==========================================================================
-    temporal_decay_rate: 0.01      # Very slow temporal decay
-    frames_before_decay: 100       # Don't decay until 100 frames without update
-    decay_factor: 0.995            # When decaying, do it very slowly
-    decay_update_rate_hz: 1.0      # Run decay check once per second
-    
-    # ==========================================================================
-    # STATIC OBJECT PROTECTION (NEW - Prevents premature clearing)
-    # ==========================================================================
-    min_observations_for_static: 3         # After 3 occupied observations, mark as static
-    occupied_protection_threshold: 0.5     # Don't free-space cells with log_odds > 0.5
-    occupied_protection_frames: 50         # Don't clear cells seen as occupied in last 50 frames
-    static_decay_factor: 0.999             # Almost no decay for confirmed static obstacles
-    
-    # ==========================================================================
-    # CONFIDENCE PARAMETERS
-    # ==========================================================================
-    confidence_publish_threshold: 0.50 # Require more confidence
-    min_observations_for_static: 5     # Need more observations
+    # Frames
+    map_frame: "odom"
+    base_frame: "base_link"
+    radar_frame: "ARS_548"
 
-    
-    # ==========================================================================
-    # BAYESIAN LOG-ODDS
-    # ==========================================================================
-    p_occ: 0.70                    # Occupied probability for hit
-    p_free: 0.4                    # Free probability for miss (relatively weak)
-    p0: 0.5                        # Prior
-    lo_min: -2.0                   # Min log-odds (allows some free marking)
-    lo_max: 3.0                    # Max log-odds (asymmetric - harder to clear)
-    
-    # ==========================================================================
-    # FREE SPACE MARKING - CONSERVATIVE
-    # ==========================================================================
-    mark_free_space: true          # Enable ray casting for free space
-    free_space_weight: 0.3         # Weak free-space evidence (was 0.5)
-    safety_margin_m: 0.5           # Stop marking free 0.5m before hit point
-    
-    # ==========================================================================
-    # RANGE FILTERING
-    # ==========================================================================
-    min_range: 1.0                 # Ignore detections closer than 1m
-    max_range: 40.0                # Ignore detections beyond 40m
-    
-    # ==========================================================================
-    # RCS/INTENSITY FOR ARS_548
-    # ==========================================================================
-    rcs_format: "uint8"            # ARS_548 uses UINT8 (0-255)
-    rcs_min_db: -12.0              # Maps to 0
-    rcs_max_db: 12.0               # Maps to 255
-    intensity_scale: 0.08          # How much RCS affects occupancy probability
-    
-    # ==========================================================================
-    # DYNAMIC OBJECT FILTERING
-    # ==========================================================================
+    # Topics
+    input_topic: "/PointCloudDetectionMapping"     # V5: mapping-specific filtered cloud (stricter RCS)
+    grid_topic: "/map"
+    filtered_cloud_topic: "/filtered_radar_cloud"
+    odom_topic: "/fused_odom/odometry"          # V5: fused odometry
+
+    # Grid — sized for 8.05 m × 16.05 m room + 2 m margin on each side
+    grid_resolution: 0.21       # 21cm cells — better wall definition indoors
+    grid_size_m: 60.0            # 60m grid; room longest dim 16.05 m + margin
+
+    # V5: Adaptive grid growth — expands when robot nears an edge (data is never lost)
+    enable_moving_origin: true
+    recenter_margin_m: 5.0      # trigger expansion when robot is this close to any edge (m)
+    expand_step_m: 10.0         # grow by this amount per expansion (m)
+
+    # V5: Inter-scan ego-motion compensation
+    enable_motion_compensation: true
+    odom_buffer_size: 200       # ~4s of odom at 50 Hz
+
+    # V5: Indoor multipath rejection (AGGRESSIVE for your noise issue)
+    # Radar signals bounce off walls/floor/ceiling creating ghost points at ~2x range.
+    # This rejects points much farther than the nearest cluster in each azimuth bin.
+    enable_multipath_rejection: true
+    multipath_range_ratio: 1.3  # reject points > 1.3x the nearest cluster range (was 1.8)
+    multipath_min_near_hits: 2  # need at least 2 near hits to trigger rejection
+
+    # Time-based decay
+    decay_delay_sec: 4.0        # aggressive decay — clear old hypotheses faster
+    decay_factor: 0.998         # indoor: slightly faster neutral decay (was 0.999)
+    decay_update_rate_hz: 2.0
+
+    # Static confirmation
+    min_observations_for_static: 15   # require more consistent hits before locking
+    dynamic_revoke_threshold: 10      # revoke faster if inconsistent (was 15)
+    occupied_protection_threshold: 0.20  # VERY easy to override false positives (was 0.40)
+    occupied_protection_sec: 1.5      # stop protecting noise quickly (was 4.0)
+
+    # Confidence
+    confidence_publish_threshold: 0.50  # require ~5 hits before showing
+    confidence_increment: 0.12          # indoor: faster confidence gain (was 0.10)
+
+    # Gaussian Inverse Sensor Model — tangential spread, confidence-gated
+    enable_gaussian_sensor_model: true
+    gaussian_sigma_m: 0.12       # tangential sigma; 2° at 5m ≈ 0.17m, 0.12m is ~1.7 cells
+    gaussian_kernel_half: 3      # loop bound (max of radial_half, tangential_half)
+    gaussian_min_hits: 3         # spread only after 3 direct hits — suppresses noise ghosts
+    gaussian_radial_half: 0      # no radial spreading — walls stay 1 cell thick
+    gaussian_tangential_half: 3  # ±3 cells tangentially (±0.33m) — fills gaps along wall
+
+    # Bayesian — indoor-tuned for strong wall returns
+    p_occ: 0.80              # more conservative — require stronger evidence before marking occupied
+    p_free: 0.35             # more aggressive free space — clears ghosts faster
+    p0: 0.5
+    lo_min: -2.5             # indoor: allow stronger free assertion (was -2.0)
+    lo_max: 2.5              # lower ceiling — occupied cells stay correctable by free-space rays
+
+    # Free space (VERY AGGRESSIVE to eliminate noise beyond walls)
+    mark_free_space: true
+    free_space_weight: 0.40   # much stronger free-space clearing (was 0.15)
+    safety_margin_m: 0.07     # ~0.5 cell — free space clears right up to the wall
+
+    # Range — indoor
+    min_range: 0.5
+    max_range: 30.0           # indoor rooms rarely exceed 10m
+    min_rcs_threshold_db: -13.0
+
+    # RCS
+    rcs_format: "uint8"
+    rcs_min_db: -20.0
+    rcs_max_db: 20.0
+    intensity_scale: 0.40     # indoor: slightly higher RCS weight (was 0.35)
+    range_decay_factor: 0.020 # indoor: faster range decay (was 0.015) — closer targets
+
+    # Dynamic filter with ego compensation
     enable_dynamic_filter: true
-    dynamic_velocity_threshold: 2.0        # Objects moving > 2 m/s are dynamic
-    dynamic_decay_factor: 0.95             # Dynamic objects decay faster
-    
-    # ==========================================================================
-    # TF CONFIGURATION
-    # ==========================================================================
-    tf_timeout_sec: 0.1            # Max time to wait for TF
+    dynamic_velocity_threshold: 0.6    # indoor: lower threshold (was 0.8) — walking speed
+    enable_ego_compensation: true
 
+    # TF
+    tf_timeout_sec: 1.0
+    tf_stale_threshold_sec: 0.5
 
-###############################################################################
-# HOW TO VERIFY IN RVIZ
-###############################################################################
-#
-# 1. Set Fixed Frame to "odom" (or whatever you set map_frame to)
-#
-# 2. Add displays:
-#    - Map: topic /map
-#    - PointCloud2: topic /PointCloudDetection (to see raw radar)
-#    - TF: to see the transform tree
-#    - Path: topic /trajectory (if using graph_slam)
-#
-# 3. Expected TF tree:
-#    map -> odom -> base_link -> imu_link -> ARS_548
-#                           \-> radar_frame
-#                           \-> camera_link -> ...
-#
-# 4. The grid should stay fixed while the robot (base_link) moves through it.
-#    Objects should accumulate and persist even when robot moves away.
-#
-###############################################################################
+    # Map cleanliness
+    # Isolated cell suppression: suppress occupied cells that have fewer than N occupied neighbors.
+    # 0 = disabled, 1 = remove lone pixels (recommended), 2 = require 2 neighbors (aggressive)
+    min_occupied_neighbors: 2
+    # Reset the entire grid when a bag loop is detected (backward time jump in odometry).
+    # Enable together with bag_loop_reset in fused_odom_config.yaml for clean repeated passes.
+    enable_map_reset_on_loop: false
+    map_reset_time_jump_sec: 0.5
 
+    # Occlusion filtering (STRICT: block rays beyond wall hits)
+    enable_per_ray_occlusion: true
+    enable_map_occlusion: true          # CRITICAL: reject inconsistent returns
+    map_occlusion_start_frame: 100     # Start aggressive filtering sooner
+    azimuth_bin_size_deg: 2.0          # Fine granularity per azimuth
+    behind_range_margin_m: 0.2         # Tighter margin (was 0.3)
+    behind_detection_weight: 0.10      # Weaker ghost weight (was 0.25)
+    min_hits_to_occlude: 1             # One hit blocks rays! (was 3) — eliminates diagonal artifacts
 
-###############################################################################
-# TROUBLESHOOTING
-###############################################################################
-#
-# Problem: "Cannot get TF" warnings
-# Solution: Check your TF tree with: ros2 run tf2_tools view_frames
-#           Make sure map_frame -> radar_frame path exists
-#
-# Problem: Map moves with robot (not accumulating)
-# Solution: Make sure map_frame is "odom" or "map", NOT "base_link"
-#           The grid_msg.header.frame_id must be the fixed frame
-#
-# Problem: Objects disappear too quickly
-# Solutions:
-#   - Increase frames_before_decay to 200
-#   - Increase decay_factor to 0.998
-#   - Increase occupied_protection_frames to 100
-#   - Lower confidence_publish_threshold to 0.1
-#
-# Problem: Too much noise / false positives
-# Solutions:
-#   - Increase min_observations_for_static to 5
-#   - Increase confidence_publish_threshold to 0.25
-#   - Decrease p_occ to 0.70
-#
-# Problem: Free space not being marked
-# Solutions:
-#   - Ensure mark_free_space: true
-#   - Check have_robot_pose is being set (needs base_frame -> map_frame TF)
-#   - Decrease occupied_protection_threshold to 0.3
-#
-###############################################################################
+    # Angle-dependent RCS thresholds (uint8, 0-255) — STRICT for ray cleanliness
+    min_rcs_u8_center: 35       # Stricter center (was 25)
+    min_rcs_u8_edge: 65         # Stricter edge (was 55)
+    min_rcs_u8_high_edge: 95    # Stricter high edge (was 85)
+    min_rcs_u8_elevation: 75    # Stricter elevation (was 65)
+
+    # FoV limits
+    max_azimuth_deg: 70.0
+    max_elevation_deg: 30.0    # indoor: tighter elevation (was 20.0) — reject ceiling bounces
+    z_slice_min: -0.6          # indoor: tighter (was -0.8) — reject floor
+    z_slice_max: 1.0           # indoor: tighter (was 0.8) — reject ceiling

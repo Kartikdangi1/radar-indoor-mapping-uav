@@ -1,0 +1,15 @@
+{
+  "threshold": 0.5,
+  "use_adaptive": true,
+  "blur": 3,
+  "median": 3,
+  "opening": 1,
+  "closing": 1,
+  "dilation": 0,
+  "erosion": 0,
+  "_lap_var": 6543.58,
+  "_mean_val": 204.54,
+  "_mean_thick": 1.5,
+  "_occ_ratio": 7.5283,
+  "_target_px": 2
+}

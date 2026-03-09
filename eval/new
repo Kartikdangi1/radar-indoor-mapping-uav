@@ -1,0 +1,231 @@
+  ---                                                  
+  Thesis Review — Consolidated Report
+                                                                                     
+  HIGH PRIORITY                                                                                           
+                                                                                                          
+  Cross-Chapter Contradictions
+
+  ┌─────┬─────────────┬───────────────────────────────────────────────────────────────────────────────┐
+  │  #  │  Chapters   │                                     Issue                                     │
+  ├─────┼─────────────┼───────────────────────────────────────────────────────────────────────────────┤
+  │ H1  │ Ch. 3 vs    │ Grid size: Introduction states 30 m × 30 m; Evaluation Table 6 states 20 m ×  │
+  │     │ Ch. 7       │ 20 m. One value is wrong.                                                     │
+  ├─────┼─────────────┼───────────────────────────────────────────────────────────────────────────────┤
+  │     │ Ch. 6 vs    │ Multipath threshold: Software Architecture states > 1.8× median range;        │
+  │ H2  │ Ch. 7       │ Evaluation Discussion states > 1.3×. The design and evaluation chapter must   │
+  │     │             │ agree.                                                                        │
+  ├─────┼─────────────┼───────────────────────────────────────────────────────────────────────────────┤
+  │     │             │ IMU rate — 3-way contradiction: Hardware says 480 Hz; Software says 100 Hz;   │
+  │ H3  │ Ch. 5 / Ch. │ Evaluation Table 3 lists 500 Hz nominal (actual count = 57,785 msgs / 246.1 s │
+  │     │  6 / Ch. 7  │  = 234.8 Hz). Either 100 Hz is a decimated processing rate (never stated), or │
+  │     │             │  all three figures are wrong simultaneously.                                  │
+  ├─────┼─────────────┼───────────────────────────────────────────────────────────────────────────────┤
+  │ H4  │ Ch. 7       │ IMU message count: 57,785 / 246.1 s = 234.8 Hz, but table lists 500.0 Hz      │
+  │     │ internal    │ nominal rate — the count and the rate do not match.                           │
+  └─────┴─────────────┴───────────────────────────────────────────────────────────────────────────────┘
+
+  Critical Logic / Math Errors
+
+  ┌─────┬─────────────┬───────────────────────────────────────────────────────────────────────────────┐
+  │  #  │  Location   │                                     Issue                                     │
+  ├─────┼─────────────┼───────────────────────────────────────────────────────────────────────────────┤
+  │     │ Ch. 7, line │ P95 latency claim is inverted: "P95 latency of 24.68 ms remains below the 20  │
+  │ H5  │  265        │ ms period for 50 Hz" — 24.68 > 20. The intended comparison is likely 40 Hz    │
+  │     │             │ (25 ms frame period), which 24.68 ms does satisfy.                            │
+  ├─────┼─────────────┼───────────────────────────────────────────────────────────────────────────────┤
+  │     │ Ch. 8,      │ "When all visual and distance sensors fail": System has a structural          │
+  │ H6  │ Final       │ dependency on the downward LiDAR for Z-axis height constraint (Ch. 6,         │
+  │     │ Remarks     │ §6.4.3). This claim is factually incorrect.                                   │
+  ├─────┼─────────────┼───────────────────────────────────────────────────────────────────────────────┤
+  │     │ Ch. 3 vs    │ Loop closure not demonstrated: Introduction describes "GICP scan-matching     │
+  │ H7  │ Ch. 7       │ SLAM with incremental loop closure." Evaluation reports zero loop closures    │
+  │     │             │ triggered. The Introduction overstates a feature that was never activated.    │
+  └─────┴─────────────┴───────────────────────────────────────────────────────────────────────────────┘
+
+  Bibliography Errors
+
+  #: H8
+  Location: references.bib
+  Issue: Duplicate arXiv entry: zhang2025a and zhu2025 both point to arXiv:2502.15452 with different
+  author
+    lists. The correct attribution is Zhu et al. zhang2025a is a mis-attributed duplicate — cited in Ch. 5
+
+    line 135. Fix: replace \cite{zhang2025a} → \cite{zhu2025} and delete the zhang2025a entry.
+  ────────────────────────────────────────
+  #: H9
+  Location: Ch. 4, line 218
+  Issue: huang2024 unverifiable: No venue, DOI, or arXiv ID — examiner cannot locate this work.
+
+  Suspicious Citations
+
+  ┌─────┬────────────┬────────────────────────────────────────────────────────────────────────────────┐
+  │  #  │  Location  │                                     Issue                                      │
+  ├─────┼────────────┼────────────────────────────────────────────────────────────────────────────────┤
+  │     │ Ch. 6,     │ baspinar2023 cited for "LiDAR height prior factors in factor graph" — it is a  │
+  │ H10 │ line 334   │ drone altitude-detection paper, not a factor-graph formulation source. Verify  │
+  │     │            │ or replace.                                                                    │
+  ├─────┼────────────┼────────────────────────────────────────────────────────────────────────────────┤
+  │     │ Ch. 7,     │ Typographic quotation marks on a sentence about UAVs, attributed to Kellner    │
+  │ H11 │ line 454   │ 2013 (an automotive radar paper). Almost certainly not a verbatim quote —      │
+  │     │            │ remove the quotation marks.                                                    │
+  └─────┴────────────┴────────────────────────────────────────────────────────────────────────────────┘
+
+  ---
+  MEDIUM PRIORITY
+
+  Grammar
+
+  ┌─────┬─────────────────────┬─────────┬──────────────────────────────────────────────────────────────┐
+  │  #  │        File         │  Line   │                            Issue                             │
+  ├─────┼─────────────────────┼─────────┼──────────────────────────────────────────────────────────────┤
+  │ M1  │ 02_abstract.tex     │ 4       │ dual power interface — missing hyphen; Introduction          │
+  │     │                     │         │ correctly writes dual-power interface                        │
+  ├─────┼─────────────────────┼─────────┼──────────────────────────────────────────────────────────────┤
+  │ M2  │ 03_introduction.tex │ 40      │ optimized → optimised (British-English pass missed this one) │
+  ├─────┼─────────────────────┼─────────┼──────────────────────────────────────────────────────────────┤
+  │     │                     │         │ "three-stage multipath rejection" but the parenthetical      │
+  │ M3  │ 08_conclusion.tex   │ 27      │ lists four items — change to "four-stage" or collapse two    │
+  │     │                     │         │ items                                                        │
+  ├─────┼─────────────────────┼─────────┼──────────────────────────────────────────────────────────────┤
+  │ M4  │ 05_hardware.tex     │ 113     │ Orphan sentence floating after a figure environment with no  │
+  │     │                     │         │ paragraph context                                            │
+  ├─────┼─────────────────────┼─────────┼──────────────────────────────────────────────────────────────┤
+  │ M5  │ 05_hardware.tex     │ 306–308 │ Mid-word line break in low- / frequency — will render as     │
+  │     │                     │         │ stray hyphen in PDF                                          │
+  ├─────┼─────────────────────┼─────────┼──────────────────────────────────────────────────────────────┤
+  │ M6  │ 06_software.tex     │ 51      │ Two adjacent sentences say the same thing ("lists all        │
+  │     │                     │         │ launched nodes" / "see Table for summary") — remove one      │
+  ├─────┼─────────────────────┼─────────┼──────────────────────────────────────────────────────────────┤
+  │     │                     │         │ Prose says system is "solved via least squares," then two    │
+  │ M7  │ 06_software.tex     │ 193–195 │ sentences later explains RANSAC is needed because least      │
+  │     │                     │         │ squares isn't robust — add a qualifying clause on first      │
+  │     │                     │         │ mention                                                      │
+  └─────┴─────────────────────┴─────────┴──────────────────────────────────────────────────────────────┘
+
+  Inconsistencies Within Chapters
+
+  ┌─────┬───────────────────┬──────────┬──────────────────────────────────────────────────────────────┐
+  │  #  │       File        │  Lines   │                            Issue                             │
+  ├─────┼───────────────────┼──────────┼──────────────────────────────────────────────────────────────┤
+  │     │                   │          │ Table says dynamic cells clear in "~10 cycles (~5 s)"; the   │
+  │ M8  │ 06_software.tex   │ 565–584  │ 6-second observation-gap delay means actual clearance is ~11 │
+  │     │                   │          │  s — table caption is misleading                             │
+  ├─────┼───────────────────┼──────────┼──────────────────────────────────────────────────────────────┤
+  │     │                   │ 273 vs   │ "RAM peaked at 100 MB" vs "97 MB mean RAM footprint" — peak  │
+  │ M9  │ 07_evaluation.tex │ 286      │ and mean are different statistics; mean label is dropped on  │
+  │     │                   │          │ line 286, creating apparent contradiction                    │
+  ├─────┼───────────────────┼──────────┼──────────────────────────────────────────────────────────────┤
+  │     │                   │ 308–311  │ Raw occupied cell fraction: 0.98% in tab:map_baseline vs     │
+  │ M10 │ 07_evaluation.tex │ vs 363   │ 1.0% in tab:map_enhancement — rounding inconsistency for the │
+  │     │                   │          │  same map state                                              │
+  ├─────┼───────────────────┼──────────┼──────────────────────────────────────────────────────────────┤
+  │ M11 │ 07_evaluation.tex │ 214 vs   │ Figure label fig:5.3c but image filename is                  │
+  │     │                   │ 217      │ fig5_3b_orientation_rpy — filename/label mismatch            │
+  ├─────┼───────────────────┼──────────┼──────────────────────────────────────────────────────────────┤
+  │ M12 │ 07_evaluation.tex │ 335      │ Tool introduction (Map Enhancer Wizard) appears after the    │
+  │     │                   │          │ figures it describes — sentence order should be inverted     │
+  └─────┴───────────────────┴──────────┴──────────────────────────────────────────────────────────────┘
+
+  Overclaimed Results
+
+  ┌─────┬───────────────┬─────────────────────────────────────────────────────────────────────────────┐
+  │  #  │   Location    │                                    Issue                                    │
+  ├─────┼───────────────┼─────────────────────────────────────────────────────────────────────────────┤
+  │     │ Ch. 7,        │ "competitive with state-of-the-art" — no ground-truth ATE; result is a      │
+  │ M13 │ odometry      │ single-endpoint proxy, not ATE or RPE. Soften to "consistent with the range │
+  │     │ section       │  reported by"                                                               │
+  ├─────┼───────────────┼─────────────────────────────────────────────────────────────────────────────┤
+  │     │               │ "high-quality occupancy maps" — map had 675 ghost artefacts before          │
+  │ M14 │ Ch. 8, §8.2   │ post-processing, evaluated in a single room. The thesis's own discussion    │
+  │     │               │ says "usable after post-processing." Tone down.                             │
+  └─────┴───────────────┴─────────────────────────────────────────────────────────────────────────────┘
+
+  Missing Citations (keys already in bib)
+
+  ┌─────┬─────────────────────┬────────────┬──────────────────────────────────────────────────────────┐
+  │  #  │        File         │    Line    │                         Missing                          │
+  ├─────┼─────────────────────┼────────────┼──────────────────────────────────────────────────────────┤
+  │ M15 │ 03_introduction.tex │ 20         │ \cite{madgwick2011} for Madgwick IMU filtering           │
+  ├─────┼─────────────────────┼────────────┼──────────────────────────────────────────────────────────┤
+  │ M16 │ 03_introduction.tex │ 20         │ \cite{fischler1981} (and/or kellner2013, hong2022) for   │
+  │     │                     │            │ RANSAC ego-velocity                                      │
+  ├─────┼─────────────────────┼────────────┼──────────────────────────────────────────────────────────┤
+  │ M17 │ 03_introduction.tex │ 20         │ \cite{segal2009} for GICP                                │
+  ├─────┼─────────────────────┼────────────┼──────────────────────────────────────────────────────────┤
+  │ M18 │ 03_introduction.tex │ 20         │ \cite{elfes1989} / \cite{thrun2005} for Bayesian         │
+  │     │                     │            │ log-odds occupancy grid                                  │
+  ├─────┼─────────────────────┼────────────┼──────────────────────────────────────────────────────────┤
+  │ M19 │ 04_background.tex   │ 21 / Ch.5  │ \cite{4d_radar_manual} in radar spec table captions (key │
+  │     │                     │ line 144   │  exists, never used)                                     │
+  ├─────┼─────────────────────┼────────────┼──────────────────────────────────────────────────────────┤
+  │ M20 │ 03_introduction.tex │ 9          │ Claim that 4D radar has higher angular resolution than   │
+  │     │                     │            │ legacy 2D/3D radar — add \cite{harlow2023}               │
+  └─────┴─────────────────────┴────────────┴──────────────────────────────────────────────────────────┘
+
+  ---
+  LOW PRIORITY
+
+  ┌─────┬───────────────┬─────────────────────────────────────────────────────────────────────────────┐
+  │  #  │   Location    │                                    Issue                                    │
+  ├─────┼───────────────┼─────────────────────────────────────────────────────────────────────────────┤
+  │ L1  │ Ch. 4, line   │ huang2024 described as "outdoor/ground-robot" but Table classifies it as    │
+  │     │ 218           │ "indoor handheld" — change to "non-UAV platforms"                           │
+  ├─────┼───────────────┼─────────────────────────────────────────────────────────────────────────────┤
+  │ L2  │ Ch. 4, line   │ michalczyk2026 cited in body text but absent from the comparison table —    │
+  │     │ 218           │ either add a row or note table is non-exhaustive                            │
+  ├─────┼───────────────┼─────────────────────────────────────────────────────────────────────────────┤
+  │ L3  │ Ch. 4, line   │ Novelty claim "No open-source system combines…" — add "To the best of the   │
+  │     │ 218           │ authors' knowledge" hedge                                                   │
+  ├─────┼───────────────┼─────────────────────────────────────────────────────────────────────────────┤
+  │ L4  │ Ch. 5, lines  │ fig:3.2 and fig:3.2b are separate figure environments — will render as      │
+  │     │ 101/111       │ Figure 3.2 and Figure 3.3 in PDF, not 3.2(a)/3.2(b) as the labels imply     │
+  ├─────┼───────────────┼─────────────────────────────────────────────────────────────────────────────┤
+  │ L5  │ Ch. 6, line   │ xu2019 (visual SLAM paper) cited to support acceptable yaw-drift duration — │
+  │     │ 280           │  weak match; verify or remove                                               │
+  ├─────┼───────────────┼─────────────────────────────────────────────────────────────────────────────┤
+  │ L6  │ Ch. 6, §6.4   │ "confidence" field used with a precise threshold (< 0.1) but its            │
+  │     │               │ definition, domain, and update rule never stated in the chapter             │
+  ├─────┼───────────────┼─────────────────────────────────────────────────────────────────────────────┤
+  │ L7  │ Ch. 6, §6.5   │ Optional Ceres factor-graph backend described but never evaluated and not   │
+  │     │               │ mentioned in future work — creates an unfulfilled expectation               │
+  ├─────┼───────────────┼─────────────────────────────────────────────────────────────────────────────┤
+  │ L8  │ Ch. 7, §7.3   │ "40 Hz owing to 2× bag playback speed during data collection" — logically   │
+  │     │               │ inverted; playback speed applies during replay, not during recording        │
+  ├─────┼───────────────┼─────────────────────────────────────────────────────────────────────────────┤
+  │ L9  │ Ch. 7, §7.6   │ Ablation study is qualitative/estimated throughout; presenting it as a      │
+  │     │               │ formal ablation without controlled re-runs may draw examiner scrutiny       │
+  ├─────┼───────────────┼─────────────────────────────────────────────────────────────────────────────┤
+  │ L10 │ Ch. 8, §8.2   │ SAR/hazmat applicability claimed based on one room, no ground truth, no     │
+  │     │               │ airborne flight — broaden only if evaluation supports it                    │
+  └─────┴───────────────┴─────────────────────────────────────────────────────────────────────────────┘
+
+  ---
+  Summary by Fix Type
+
+  ┌──────────────────────────┬───────┬────────────────────────────────────────────────────────────────┐
+  │           Type           │ Count │                        Highest priority                        │
+  ├──────────────────────────┼───────┼────────────────────────────────────────────────────────────────┤
+  │ Fix a number or          │ 5     │ H1 (grid size), H2 (threshold), H3/H4 (IMU rate), H5 (P95      │
+  │ parameter                │       │ claim)                                                         │
+  ├──────────────────────────┼───────┼────────────────────────────────────────────────────────────────┤
+  │ Fix a factual claim      │ 2     │ H6 (sensors fail), H7 (loop closure)                           │
+  ├──────────────────────────┼───────┼────────────────────────────────────────────────────────────────┤
+  │ Fix the bib              │ 2     │ H8 (duplicate entry), H9 (incomplete entry)                    │
+  ├──────────────────────────┼───────┼────────────────────────────────────────────────────────────────┤
+  │ Verify/replace a         │ 3     │ H10, H11, L5                                                   │
+  │ citation                 │       │                                                                │
+  ├──────────────────────────┼───────┼────────────────────────────────────────────────────────────────┤
+  │ Add missing citations    │ 7     │ M15–M20                                                        │
+  ├──────────────────────────┼───────┼────────────────────────────────────────────────────────────────┤
+  │ Grammar/phrasing         │ 7     │ M1–M7                                                          │
+  ├──────────────────────────┼───────┼────────────────────────────────────────────────────────────────┤
+  │ Soften overclaim         │ 2     │ M13, M14                                                       │
+  ├──────────────────────────┼───────┼────────────────────────────────────────────────────────────────┤
+  │ Minor inconsistency      │ 6     │ M8–M12, L1                                                     │
+  ├──────────────────────────┼───────┼────────────────────────────────────────────────────────────────┤
+  │ Low-priority structural  │ 5     │ L2–L10                                                         │
+  └──────────────────────────┴───────┴────────────────────────────────────────────────────────────────┘
+
+  ---
+  No files have been changed. Let me know which issues you'd like to fix and I'll apply the edits.
+

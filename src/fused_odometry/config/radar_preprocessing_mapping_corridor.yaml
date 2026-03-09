@@ -1,0 +1,36 @@
+##
+# Radar preprocessing config for MAPPING — CORRIDOR variant.
+# Optimised for longer corridors: wider range, looser RCS threshold.
+##
+/**:
+  ros__parameters:
+    input_topic:  "/PointCloudDetection"
+    output_topic: "/PointCloudDetectionMapping"
+
+    # ── Range ─────────────────────────────────────────────────────────────────
+    min_range:  0.5
+    max_range: 30.0             # corridor: longer range needed
+
+    # ── Field of View ─────────────────────────────────────────────────────────
+    max_azimuth_deg:    70.0
+    max_elevation_deg:  20.0
+
+    # ── RCS ───────────────────────────────────────────────────────────────────
+    min_rcs_threshold: -4.0
+
+    # ── Axis Flips ────────────────────────────────────────────────────────────
+    flip_x: false
+    flip_y: true
+    flip_z: false
+
+    # ── Z-Slice ───────────────────────────────────────────────────────────────
+    enable_z_slice: true
+    z_min: -0.3
+    z_max:  2.5
+
+    # ── Optional TF Transform ─────────────────────────────────────────────────
+    enable_tf_transform:   false
+    target_frame:          "base_link"
+    tf_lookup_timeout_sec:  0.05
+
+    log_filter_stats: true
