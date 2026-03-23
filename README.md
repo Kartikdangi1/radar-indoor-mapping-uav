@@ -4,9 +4,8 @@
 
 [![ROS 2 Humble](https://img.shields.io/badge/ROS%202-Humble-blue?logo=ros)](https://docs.ros.org/en/humble/)
 [![Platform](https://img.shields.io/badge/Jetson-Orin%20NX-green?logo=nvidia)](https://www.nvidia.com/en-us/autonomous-machines/embedded-systems/jetson-orin/)
-[![Degree](https://img.shields.io/badge/Degree-Bachelor%20of%20Engineering-orange)](.)
 
-*Kartik Dangi · THWS Würzburg-Schweinfurt · March 2026*
+*Kartik Dangi · March 2026*
 
 </div>
 
