@@ -1,7 +1,3 @@
-<div align="center">
-
-<img src="images/thws_logo.png" height="55" alt="THWS"/>
-
 # Radar-Based Indoor Occupancy Mapping on a UAV
 
 **Temporal filtering and system integration for 4D automotive radar on embedded platforms**
@@ -167,19 +163,4 @@ python3 eval/08_enhance_map.py --map eval/maps/baseline.pgm --simple
 
 ---
 
-## Citation
-
-```bibtex
-@bachelorsthesis{dangi2026radar,
-  author = {Dangi, Kartik},
-  title  = {Radar-Based Indoor Occupancy Mapping on a UAV:
-            System Integration and Temporal Filtering for 4D Automotive Radar},
-  school = {Technische Hochschule W{\"u}rzburg-Schweinfurt},
-  year   = {2026},
-  month  = {March}
-}
-```
-
----
-
-*Kartik Dangi · Department of Engineering · THWS · Würzburg, Germany*
+*Kartik Dangi*
