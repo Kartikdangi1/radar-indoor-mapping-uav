@@ -28,12 +28,6 @@
 
 A ROS 2 system that turns a **4D automotive radar** into a real-time indoor mapping tool on a UAV — no GPS, no camera, no LiDAR map. Works in smoke, darkness, and GPS-denied environments.
 
-<div align="center">
-<img src="images/comparison_smoke_radar.png" width="65%" alt="Radar vs camera in smoke"/>
-
-*Radar sees through smoke — cameras and LiDARs do not*
-</div>
-
 ### Key Features
 
 | | |
@@ -42,6 +36,8 @@ A ROS 2 system that turns a **4D automotive radar** into a real-time indoor mapp
 | **Radar SLAM** | GICP scan matching + loop closure for drift correction |
 | **Temporal Occupancy Grid** | Bayesian log-odds with occlusion filtering + temporal decay |
 | **Embedded Real-Time** | ~150 ms full pipeline latency on Jetson Orin NX |
+
+Automotive radar operating at 77 GHz penetrates smoke, dust, and darkness — conditions that cause cameras and LiDARs to fail. It also provides per-point Doppler velocity, enabling ego-motion estimation without any visual features.
 
 ---
 
