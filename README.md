@@ -145,7 +145,6 @@ ros2 service call /save_map std_srvs/srv/Trigger "{}"
 |---|---|
 | `fused_odometry` | IMU + Doppler + height fusion, GICP SLAM |
 | `temporal_radar_mapping` | Bayesian occupancy grid, map saver |
-| `radar_messages` | Custom ROS 2 message definitions |
 
 All config in `src/<package>/config/`. Default: 7 cm resolution, 4 s decay delay.
 

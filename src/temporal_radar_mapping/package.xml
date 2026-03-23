@@ -8,7 +8,7 @@
     using Continental ARS_548 4D radar.
   </description>
 
-  <maintainer email="kartik.dangi@example.com">Kartik Dangi</maintainer>
+  <maintainer email="1kartik.dangi@gmail.com">Kartik Dangi</maintainer>
   <license>MIT</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>

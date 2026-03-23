@@ -3,7 +3,7 @@
   <name>fused_odometry</name>
   <version>0.2.0</version>
   <description>Fused odometry system combining IMU, LiDAR height, and ARS548 Radar ego-velocity estimation</description>
-  <maintainer email="you@email.com">You</maintainer>
+  <maintainer email="1kartik.dangi@gmail.com">Kartik Dangi</maintainer>
   <license>Apache-2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
